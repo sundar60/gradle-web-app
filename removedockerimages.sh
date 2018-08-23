@@ -1,16 +1,16 @@
 #!/bin/bash
 # Stop all containers
-containers=`docker ps -a -q`
+containers=`sudo docker ps -a -q`
 if [ -n "$containers" ] ; then
-        docker stop $containers
+        sudo docker stop $containers
 fi
 # Delete all containers
 containers=`docker ps -a -q`
 if [ -n "$containers" ]; then
-        docker rm -f -v $containers
+        sudo docker rm -f -v $containers
 fi
 # Delete all images
-images=`docker images -q -a`
+images=`sudo docker images -q -a`
 if [ -n "$images" ]; then
-        docker rmi -f $images
+        sudo docker rmi -f $images
 fi
