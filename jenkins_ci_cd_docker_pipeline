@@ -20,11 +20,14 @@ node{
     }
     
     stage('Run Docker Image In Dev Server'){
-        def dockerRun = 'sudo docker run -d -p 8080:8080 --name gradle-web-app dockerhandson/gradle-web-app'
-       
-        sshagent(['AWS_UBUNTU_SSH']) {
-         sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.31.250 sudo docker stop gradle-web-app || true && sudo docker rm gradle-web-app || true'   
-         sh "ssh  ubuntu@172.31.31.250 ${dockerRun}"
+        
+        def dockerRun = ' docker run  -d -p 8080:8080 --name gradle-web-app dockerhandson/gradle-web-app'
+         
+         sshagent(['AWS_UBUNTU_SSH']) {
+          sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.31.250 docker stop gradle-web-app || true'
+          sh 'ssh  ubuntu@172.31.31.250 docker rm gradle-web-app || true'
+          sh 'ssh  ubuntu@172.31.31.250 docker rmi -f  $(docker images -q) || true'
+		  sh "ssh  ubuntu@172.31.31.250 ${dockerRun}"
        }
        
     }
