@@ -1,0 +1,35 @@
+node{
+    
+    stage('SCM Checkout'){
+        git credentialsId: 'Git-Credentials', url: 'https://github.com/Rushi-Technologies/gradle-web-app.git',branch: 'master'
+    }
+    
+    stage('Gradle Clean Build'){
+        sh 'gradle clean build'
+    }
+    
+    stage('Build Docker Image'){
+        sh 'docker build -t dockerhandson/gradle-web-app .'
+    }
+    
+    stage('Push Docker Image'){
+        withCredentials([string(credentialsId: 'Docker-Hub-Pwd', variable: 'DockerHub_Pwd')]) {
+          sh "docker login -u dockerhandson -p ${DockerHub_Pwd}"
+        }
+        sh 'docker push dockerhandson/gradle-web-app'
+    }
+    
+    stage('Run Docker Image In Dev Server'){
+        
+        def dockerRun = ' docker run  -d -p 8080:8080 --name gradle-web-app dockerhandson/gradle-web-app'
+         
+         sshagent(['AWS_UBUNTU_SSH']) {
+          sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.31.250 docker stop gradle-web-app || true'
+          sh 'ssh  ubuntu@172.31.31.250 docker rm gradle-web-app || true'
+          sh 'ssh  ubuntu@172.31.31.250 docker rmi -f  $(docker images -q) || true'
+		  sh "ssh  ubuntu@172.31.31.250 ${dockerRun}"
+       }
+       
+    }
+    
+}
