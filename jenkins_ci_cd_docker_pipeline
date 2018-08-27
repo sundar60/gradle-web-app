@@ -1,7 +1,7 @@
 node{
     
     stage('SCM Checkout'){
-        git credentialsId: 'Git-Credentials', url: 'https://github.com/Rushi-Technologies/gradle-web-app.git',branch: 'master'
+        git credentialsId: 'Git-Credentials', url: 'https://github.com/balujava/gradle-web-app.git',branch: 'master'
     }
     
     stage('Gradle Clean Build'){
